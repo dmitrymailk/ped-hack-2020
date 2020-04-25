@@ -171,15 +171,17 @@ class MessageCounter:
         """Send a predefined poll"""
         print(self, update, context)
         current = self.counter
+        self.update = update
 
         questions = [item.strip() for item in list(map(str, data['options'][current].split(",")))]
-        main_question = str(data['questions'][current])
+        main_question = str(data['questions'][current]) + "<b>qwe<b/>"
         right_id = int(data['right'][current])
 
         # print(questions, str(data['right'][current]))
+        self.update.message.reply_text(text='https://sun9-37.userapi.com/c858028/v858028165/1e25d4/cndDzsdAil0.jpg', parse_mode=ParseMode.HTML)
 
         message = update.effective_message.reply_poll(main_question,
-                                                    questions, type=Poll.QUIZ, correct_option_id=right_id, is_anonymous=False)
+                                                    questions, type=Poll.QUIZ, correct_option_id=right_id, is_anonymous=False,)
         # Save some info about the poll the bot_data for later use in receive_quiz_answer
         payload = {message.poll.id: {"chat_id": update.effective_chat.id,
                                     "message_id": message.message_id}}
@@ -197,6 +199,7 @@ class MessageCounter:
             right_id = int(data['right'][current])
 
             # print(questions, str(data['right'][current]))
+            self.update.message.reply_text(text='https://sun9-37.userapi.com/c858028/v858028165/1e25d4/cndDzsdAil0.jpg', parse_mode=ParseMode.HTML)
 
             message = self.update.effective_message.reply_poll(main_question,
                                                         questions, type=Poll.QUIZ, correct_option_id=right_id, is_anonymous=False)
