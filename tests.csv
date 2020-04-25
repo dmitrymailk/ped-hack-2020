@@ -1,0 +1,9 @@
+questions,options,right
+Начнём с простого: что такое Java?,"Мотоцикл, Остров, Сигареты, Язык программирования, Чай",3
+Что будет в результате выполнения операции 2 + 2 == 5 && 12 / 4 == 3 || 2 == 5 % 3?,"        true, false,         null,         0",0
+Что произойдет после вызова метода test()? https://sun2-4.userapi.com/cnlxyxhF7WyDjgoJTts3kGAJKzFtQF6F0delZQ/12UtX0xJFWo.jpg,"       Не скомпилируется,         В консоль выведется «Hello!»,         Ничего не будет напечатано, Исключение в рантайме",2
+"Что будет, если скомпилировать и запустить этот код? https://sun2-3.userapi.com/1idoa5mm0B1UB4My4Q2nDWlE3CMm3BMztQrOMg/EVPPJnHc2ak.jpg","        Ошибка во время компиляции,         NullPointerException,         StackOverflowError,         Код отработает успешно",2
+Каким будет результат выполнения кода: https://sun1-25.userapi.com/HR26lmaK11a8-iFmCaneRX3SntvfxjaY-E-uIw/YzdHkw4lyFM.jpg,"        Не скомпилируется,         2 1,         2 + Исключение,         2 2",3
+"Что будет, если скомпилировать и запустить этот код? https://sun2-3.userapi.com/_ly8RHueLkLbHa9CUxF2n-RkOGO7rYSHUcLCNQ/MPW7hKK2Jf4.jpg","	Ошибка во время компиляции, 	NullPointerException, 	StackOverflowException, 	Код отработает успешно",3
+"Что будет, если скомпилировать и выполнить код: https://sun2-3.userapi.com/JJONBHvth43LvR-J7TgakuyqzUFXjk5P0n9lng/DrYRF8YsltA.jpg","        В консоль будет выведено «Hello!», 	NullPointerException, 	Код выполнится без ошибок, но и в консоль ничего не будет выведено, 	Ошибка во время компиляции ",0
+Каким будет результат выполнения кода: https://sun2-3.userapi.com/NY8M4tZ1MEAPjM8tESIfHXJBQPGxqUEGKEFKQQ/h9dDLjs6qd0.jpg,"Не скомпилируется,         One + Исключение,         One Two Three + Исключение, Зациклится",2
