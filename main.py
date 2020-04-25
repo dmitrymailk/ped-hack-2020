@@ -173,12 +173,15 @@ class MessageCounter:
         current = self.counter
         self.update = update
 
-        questions = [item.strip() for item in list(map(str, data['options'][current].split(",")))]
-        main_question = str(data['questions'][current]) + "<b>qwe<b/>"
+        questions = [item.strip() for item in list(map(str, data['options'][current].split("###")))]
+        main_question = str(data['questions'][current])
         right_id = int(data['right'][current])
-
+        self.update.message.reply_text("ВОПРОС №{}".format(current))
         # print(questions, str(data['right'][current]))
-        self.update.message.reply_text(text='https://sun9-37.userapi.com/c858028/v858028165/1e25d4/cndDzsdAil0.jpg', parse_mode=ParseMode.HTML)
+        text = ""
+        if str(data['image'][current]) != 'nan':
+            text = str(data['image'][current])
+            self.update.message.reply_text(text=text, parse_mode=ParseMode.HTML)
 
         message = update.effective_message.reply_poll(main_question,
                                                     questions, type=Poll.QUIZ, correct_option_id=right_id, is_anonymous=False,)
@@ -194,12 +197,16 @@ class MessageCounter:
             self.counter += 1
             current = self.counter
 
-            questions = [item.strip() for item in list(map(str, data['options'][current].split(",")))]
+            questions = [item.strip() for item in list(map(str, data['options'][current].split("###")))]
             main_question = str(data['questions'][current])
             right_id = int(data['right'][current])
 
             # print(questions, str(data['right'][current]))
-            self.update.message.reply_text(text='https://sun9-37.userapi.com/c858028/v858028165/1e25d4/cndDzsdAil0.jpg', parse_mode=ParseMode.HTML)
+            self.update.message.reply_text("ВОПРОС №{}".format(current))
+            text = ""
+            if str(data['image'][current]) != 'nan':
+                text = str(data['image'][current])
+                self.update.message.reply_text(text=text, parse_mode=ParseMode.HTML)
 
             message = self.update.effective_message.reply_poll(main_question,
                                                         questions, type=Poll.QUIZ, correct_option_id=right_id, is_anonymous=False)
