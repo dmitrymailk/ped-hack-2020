@@ -1,0 +1,11 @@
+questions,image,options,right
+These variables are not __________________ from outside of the object.,,assess ### access ### accessible,2
+The error message says that this variable is __________________. ( = not defined),,indefinite ### undefined ### independent,1
+Class A did not __________________ the variables from the class B = The variables from class B are not showing up in class A,,inherent ### inherit ### inhibit,1
+"Inheriting is sometimes called ""__________________-classing.""",,sub ### below ###  under,0
+"Can you retrieve ( = get) this information from __________________ classes? No, you can only retrieve it from one.",,multi ### variety ### multiple,2
+"In programming terminology, what's the opposite of a parent class?",,a child class ### a children's class ### a baby class,0
+Each class has its own __________________ of functions and variables.,,set ### sitting ### setting,0
+"What is this function supposed to __________________? ( = which value is it supposed to return, what is it supposed to print, etc.)",,outreach ### program ### output,2
+What do you do with a function?,,You call out to it ### You call it ### You call up on it ,1
+It's a good idea to start or end local variables with a special __________________ (like an underscore '_'),,character ### characterization ### sign,0

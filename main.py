@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This program is dedicated to the public domain under the CC0 license.
 
 """
-Basic example for a bot that works with polls. Only 3 people are allowed to interact with each
-poll/quiz the bot generates. The preview command generates a closed poll/quiz, excatly like the
-one the user sends the bot
+ЭТО ОЧЕНЬ ПЛОХОЙ КОД ПОЖАЛУЙСТА НЕ ЧИТАЙ ЕГО
 """
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -17,6 +14,7 @@ from telegram.ext import (Updater, CommandHandler, PollAnswerHandler, PollHandle
 from telegram.utils.helpers import mention_html
 import pandas as pd 
 import os
+from natsort import natsorted
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -27,23 +25,28 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-data = pd.read_csv("./all_tests/tests.csv", encoding="utf8")
+# data = pd.read_csv("./all_tests/tests.csv", encoding="utf8")
 
 
 class MessageCounter:
-    def __init__(self):
+    def __init__(self, bot2):
         
         self.counter = 0
-        self.maxQuestions = len(data['questions']) -1
+        self.maxQuestions = 0#len(self.data['questions']) -1
         self.update = None
-        self.data = pd.read_csv("./all_tests/tests.csv", encoding="utf8")
+        self.data = None #pd.read_csv("./all_tests/tests.csv", encoding="utf8")
 
-        self.keyboard = [[InlineKeyboardButton("{}.{}".format(i+1, 'Тест'), callback_data='t{}'.format(i))] 
-        for i in range(len(os.listdir("./all_tests")))]
+        search_file = sorted(os.listdir("./all_tests"))
+        
 
-        self.keyboard.append([InlineKeyboardButton("Завершить", callback_data="BACK")])
+        self.keyboard = [[InlineKeyboardButton("{}.{} {}".format(i+1, 'Тест', search_file[i][3:-4]), callback_data='t{}'.format(i))] 
+        for i in range(len(sorted(os.listdir("./all_tests"))))]
+
+        self.keyboard.append([InlineKeyboardButton("Назад", callback_data="BACK")])
 
         self.reply_markup = InlineKeyboardMarkup(self.keyboard)
+        self.bot2 = bot2
+
     
     def custom_quiz(self, update, context):
         """Send a predefined poll"""
@@ -51,15 +54,15 @@ class MessageCounter:
         current = self.counter
         self.update = update
 
-        questions = [item.strip() for item in list(map(str, data['options'][current].split("###")))]
-        main_question = str(data['questions'][current])
-        right_id = int(data['right'][current])
+        questions = [item.strip() for item in list(map(str, self.data['options'][current].split("###")))]
+        main_question = str(self.data['questions'][current])
+        right_id = int(self.data['right'][current])
         self.update.message.reply_text("ВОПРОС №{}".format(current))
         # print(questions, str(data['right'][current]))
 
         text = ""
-        if str(data['image'][current]) != 'nan':
-            text = str(data['image'][current])
+        if str(self.data['image'][current]) != 'nan':
+            text = str(self.data['image'][current])
             self.update.message.reply_text(text=text, parse_mode=ParseMode.HTML)
 
         message = update.effective_message.reply_poll(main_question,
@@ -70,21 +73,24 @@ class MessageCounter:
         context.bot_data.update(payload)
         self.update = update
 
+    def select_quiz(self, update, context):
+        update.message.reply_text('Выберете тест, который хотите пройти:', reply_markup=self.reply_markup)
+
     def custom_quiz_handler(self, update, context):
         print("RECIEVE QUIZ CUR")
         if self.counter < self.maxQuestions:
             self.counter += 1
             current = self.counter
 
-            questions = [item.strip() for item in list(map(str, data['options'][current].split("###")))]
-            main_question = str(data['questions'][current])
-            right_id = int(data['right'][current])
+            questions = [item.strip() for item in list(map(str, self.data['options'][current].split("###")))]
+            main_question = str(self.data['questions'][current])
+            right_id = int(self.data['right'][current])
 
             # print(questions, str(data['right'][current]))
             self.update.message.reply_text("ВОПРОС №{}".format(current))
             text = ""
-            if str(data['image'][current]) != 'nan':
-                text = str(data['image'][current])
+            if str(self.data['image'][current]) != 'nan':
+                text = str(self.data['image'][current])
                 self.update.message.reply_text(text=text, parse_mode=ParseMode.HTML)
 
             message = self.update.effective_message.reply_poll(main_question,
@@ -105,16 +111,29 @@ class MessageCounter:
         
         update.message.reply_text('Выберете /quiz для того чтобы пройти тест\nВыберете /interview для того чтобы пройти интервью')
         context.bot_data.update({'CURRENT': 0})
-        update.message.reply_text('Выберете тест, который хотите пройти:', reply_markup=self.reply_markup)
+        self.update = update
         print("start", context.bot_data)
     
     def button2(self, update, context):
-        query = update.callback_query
+        query = update.callback_query.data
 
         # CallbackQueries need to be answered, even if no notification to the user is needed
         # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
         # query.answer()
-        print(query.data)
+        
+
+        if query == "BACK":
+            print('BACK')
+        elif query[:1] == "t":
+            pos = int(query[1:])
+            print("POS ", pos, sorted(os.listdir("./all_tests")))
+            search_file = sorted(os.listdir("./all_tests"))[pos]
+            self.data = pd.read_csv("./all_tests/"+ search_file, encoding="utf8")
+            print("DATA", self.data)
+            self.maxQuestions = len(self.data['questions']) -1
+            self.custom_quiz(self.update, context)
+        else:
+            self.bot2.button(update, context)
 
 
 class ConversationBot:
@@ -158,18 +177,20 @@ class ConversationBot:
         # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
         # query.answer()
         print(query.data)
-    
-        if query.data == "DONE":
-            context.bot.send_message(chat_id=update.effective_chat.id, text=self.facts_to_str())
-            self.update.message.reply_text("Держи файл с твоими ответами:")
-            self.df.to_csv('interview.csv', index = False, header=True, encoding='utf-8-sig')
-            context.bot.send_document(chat_id=update.effective_chat.id, document=open('interview.csv', 'rb'))
-        
-        else:
-        
-            self.current = query.data
+        if query.data[:1] != "t":
+            if query.data == "DONE":
+                context.bot.send_message(chat_id=update.effective_chat.id, text=self.facts_to_str())
+                self.update.message.reply_text("Держи файл с твоими ответами:")
+                self.df.to_csv('interview.csv', index = False, header=True, encoding='utf-8-sig')
+                context.bot.send_document(chat_id=update.effective_chat.id, document=open('interview.csv', 'rb'))
+            
+            else:
+            
+                self.current = query.data
 
-            query.edit_message_text(text="{} : {}".format(int(query.data)+1, self.questionList[int(query.data)]))
+                query.edit_message_text(text="{} : {}".format(int(query.data)+1, self.questionList[int(query.data)]))
+        else:
+            print("TEST ACTIVATED")
     
     def facts_to_str(self):
         facts = list()
@@ -192,16 +213,19 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    BOT = MessageCounter()
+  
     BOT2 = ConversationBot()
+    BOT = MessageCounter(BOT2)
     updater = Updater("1181981103:AAGKnUqVXKu7OR5DDfMqXpuxn00uaCeOD-8", use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler('start', BOT.start))
-    dp.add_handler(CommandHandler('quiz', BOT.custom_quiz))
+    dp.add_handler(CommandHandler('quiz', BOT.select_quiz))
     dp.add_handler(CommandHandler('interview', BOT2.interview))
     dp.add_handler(PollAnswerHandler(BOT.custom_quiz_handler))
    
+    updater.dispatcher.add_handler(CallbackQueryHandler(BOT.button2))
+
     updater.dispatcher.add_handler(CallbackQueryHandler(BOT2.button))
     echo_handler = MessageHandler(Filters.text, BOT2.echo)
     updater.dispatcher.add_handler(echo_handler)

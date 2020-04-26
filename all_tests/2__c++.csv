@@ -1,0 +1,9 @@
+questions,image,options,right
+Что вернёт программа? ,https://sun2-4.userapi.com/IvRtw17EBNOO5qtaF6_WHkQ48-FQmAcjkgezkQ/YMZztnU-YSg.jpg,"        2 ### 2.5 ### Ошибка компиляции, requires 2 раза написан",2
+"На что необходимо заменить /*?*/, чтобы избавиться от проблемы очередности инициализации? ","https://sun1-94.userapi.com/C_BLod5OV0qqGJRgJcukyPYvGP9hVkUtMMHYng/WRpJX5l1ERE.jpg",        constexpr ### constinit ### static,1
+Что выведется на экран?,https://sun2-4.userapi.com/V25HhuX9YBPmT69PiiicEcguxg0TfDcJLYbR5w/k9rS6V4Ntuk.jpg,5 ### 6 ### 10,2
+"Программа «падает» с SIGABRT. Сделайте минимальные исправления, чтобы решить ситуацию.",https://sun2-3.userapi.com/59dXutEeNhPIY_wSzry8pb7OaLTo9Ar_PAWlmQ/zdydl_x5ES8.jpg,"        Добавить join() при уничтожении каждого потока ### Не передавать массив по ссылке, а сделать копию, иначе гонка данных ",0
+Что выведет программа? , https://sun2-3.userapi.com/Rrj7TdsMDCs4of6Mj4KXERHnmoO_d2X4hb9sFQ/UIXkdp85Zc8.jpg,        200 ### 100 ### Ошибка компиляции,2
+Что выведется на экран?,https://sun1-18.userapi.com/4cc3iISGmkgwneo7iwW2gwq1ptI6aO4sgfcYzg/KxJO-3ZkUho.jpg,        3 ### 4 ### Ошибка компиляции,0
+"Код перестал компилироваться, что произошло? ",https://sun2-3.userapi.com/pdR6efXM_N_Jhxw-IJTCa6CPlyDaIiE4sjQ1Kw/xmVTqIObdQw.jpg, Забыли return в функции main ### Функция foo не содержит тела ### В опциях компиляции изменили стандарт на C++20,2
+Что выведет программа? ,https://sun2-3.userapi.com/pdR6efXM_N_Jhxw-IJTCa6CPlyDaIiE4sjQ1Kw/xmVTqIObdQw.jpg,6 ### 10 ### 12,2
