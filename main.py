@@ -8,9 +8,9 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 from telegram import (Poll, ParseMode, KeyboardButton, KeyboardButtonPollType,
-                      ReplyKeyboardMarkup, ReplyKeyboardRemove)
+                      ReplyKeyboardMarkup, ReplyKeyboardRemove, Game, InlineQueryResultGame, InlineQuery)
 from telegram.ext import (Updater, CommandHandler, PollAnswerHandler, PollHandler, MessageHandler,
-                          Filters)
+                          Filters, CallbackQueryHandler)
 from telegram.utils.helpers import mention_html
 import pandas as pd 
 import os
@@ -39,15 +39,33 @@ class MessageCounter:
         search_file = sorted(os.listdir("./all_tests"))
         
 
-        self.keyboard = [[InlineKeyboardButton("{}.{} {}".format(i+1, 'Тест', search_file[i][3:-4]), callback_data='t{}'.format(i))] 
+        self.keyboard = [[InlineKeyboardButton("{}.{} {}".format(i+1, 'Тест по', search_file[i][3:-4]), callback_data='t{}'.format(i))] 
         for i in range(len(sorted(os.listdir("./all_tests"))))]
 
         self.keyboard.append([InlineKeyboardButton("Назад", callback_data="BACK")])
 
         self.reply_markup = InlineKeyboardMarkup(self.keyboard)
         self.bot2 = bot2
+        self.timerDuration = 1
+        self.score = 0
+        self.hasStikers = True
 
-    
+    #     self.timer = self.Timer()
+
+    # def Timer(self):
+    def score_word(self):
+        if self.score == 0:
+            return "Ноль тоже результат, покури доки, почитай форумы и возвращайся, успехов!"
+        elif self.score > 0 and self.score < 2:
+            return "Ты очень старался и даже что-то заработал, но можно лучше :)"
+        elif self.score > 1 and self.score < 4:
+            return "А вот это уже заявочка! Я уверен что в следующий раз этот тест не устоит под твоим натиском"
+        elif self.score > 3 and self.score < 6:
+            return "Вот это ты разогнался конечно, моё уважение"
+        elif self.score > 5:
+            return "Либо это вы составляли тест, либо действительно очень много знаете, снимаю шляпу"
+
+
     def custom_quiz(self, update, context):
         """Send a predefined poll"""
         print(self, update, context)
@@ -73,12 +91,20 @@ class MessageCounter:
         context.bot_data.update(payload)
         self.update = update
 
+        # self.set_timer(update, context)
+
     def select_quiz(self, update, context):
+
         update.message.reply_text('Выберете тест, который хотите пройти:', reply_markup=self.reply_markup)
 
     def custom_quiz_handler(self, update, context):
-        print("RECIEVE QUIZ CUR")
+        print("RECIEVE QUIZ CUR", context.user_data)
+        print('MESSAGE ==="%s"',  update["poll_answer"]['option_ids'][0])
         if self.counter < self.maxQuestions:
+            user_answer = int(update["poll_answer"]['option_ids'][0])
+            if self.data['right'][self.counter] == user_answer:
+                self.score += 1
+                print("=======CORRECT========")
             self.counter += 1
             current = self.counter
 
@@ -99,42 +125,86 @@ class MessageCounter:
             payload = {message.poll.id: {"chat_id": update.effective_chat.id,
                                         "message_id": message.message_id}}
             context.bot_data.update(payload)
+            
             self.update = update
 
         else:
+            user_answer = int(update["poll_answer"]['option_ids'][0])
+            if self.data['right'][self.counter] == user_answer:
+                print("=======CORRECT========")
             print("again")
-            self.update.message.reply_text('Quiz is end. You can try again /start') 
+            if self.hasStikers:
+                self.update.message.reply_text('🎉🎉🎉\nТест окончен, вас счет {}/{} => {}\nНезависимо от результата <a href="https://t.me/addstickers/SuperProger">держи стикеры</a>, спасибо что был с нами\nМожете попробовать другие /quiz\nИли выбрать другой раздел /start'.format(self.score, self.maxQuestions, self.score_word()), parse_mode=ParseMode.HTML) 
+            else:
+                self.update.message.reply_text('🎉🎉🎉\nТест окончен, вас счет {}/{} => {}\nМожете попробовать другие /quiz\nИли выбрать другой раздел /start'.format(self.score, self.maxQuestions, self.score_word())) 
+            self.hasStikers = False
             self.counter = 0
+            self.score = 0
+
+
+
     
     def start(self, update, context):
         """Inform user about what this bot can do"""
         
-        update.message.reply_text('Выберете /quiz для того чтобы пройти тест\nВыберете /interview для того чтобы пройти интервью')
+        update.message.reply_text("""Привет! Я твой виртуальный помощник от компании "Гринатом". 👾
+
+Ты уже крутой профессионал 😎 или хочешь узнать свои зоны роста 🚀?
+
+С моей помощью ты можешь проверить свои силы в тестах по программированию и английскому языку, нажав /quiz 🔥
+
+А если ты уже достаточно уверен_а в себе, можешь сразу пройти /interview в нашу компанию, оставив свои контактные данные для связи. 🧳
+
+Устал_а от культа продуктивности и хочется просто отдохнуть? Жми /game и собирай алмазы между тестами 💎
+
+Кстати! По итогам их успешного прохождения тебя ждёт сюрприз 🎁, и также не забывай добавлять меня в IT-шные беседы для групповых викторин 🤓 """)
         context.bot_data.update({'CURRENT': 0})
         self.update = update
+        self.counter = 0
+        self.hasStikers = True
+        self.score = 0
         print("start", context.bot_data)
     
     def button2(self, update, context):
         query = update.callback_query.data
-
+        print('HELLO FROM GAME"%s"', query)
         # CallbackQueries need to be answered, even if no notification to the user is needed
         # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
         # query.answer()
-        
 
-        if query == "BACK":
-            print('BACK')
-        elif query[:1] == "t":
-            pos = int(query[1:])
-            print("POS ", pos, sorted(os.listdir("./all_tests")))
-            search_file = sorted(os.listdir("./all_tests"))[pos]
-            self.data = pd.read_csv("./all_tests/"+ search_file, encoding="utf8")
-            print("DATA", self.data)
-            self.maxQuestions = len(self.data['questions']) -1
-            self.custom_quiz(self.update, context)
+        # if update.callback_query.game_short_name != 'super_game':
+        #     context.bot.answerCallbackQuery(update.callback_query.id, "Sorry, '" + update.callback_query.game_short_name + "' is not available.")
+        # else:
+        #     # queries[query.id] = query
+        #     gameurl = "https://ugly-game.firebaseapp.com?id="+update.callback_query.id
+        #     context.bot.answerCallbackQuery(
+        #         callback_query_id=update.callback_query.id,
+        #         url=gameurl
+        #     )
+        if update.callback_query.game_short_name == 'super_game':
+            gameurl = "https://ugly-game.firebaseapp.com?id="+update.callback_query.id
+            context.bot.answerCallbackQuery(
+                callback_query_id=update.callback_query.id,
+                url=gameurl
+            )
         else:
-            self.bot2.button(update, context)
+            if query == "BACK":
+                print('BACK')
+            elif query[:1] == "t":
+                pos = int(query[1:])
+                print("POS ", pos, sorted(os.listdir("./all_tests")))
+                search_file = sorted(os.listdir("./all_tests"))[pos]
+                self.data = pd.read_csv("./all_tests/"+ search_file, encoding="utf8")
+                print("DATA", self.data)
+                self.maxQuestions = len(self.data['questions']) -1
+                self.custom_quiz(self.update, context)
+            else:
+                self.bot2.button(update, context)
 
+
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 class ConversationBot:
     def __init__(self):
@@ -183,6 +253,7 @@ class ConversationBot:
                 self.update.message.reply_text("Держи файл с твоими ответами:")
                 self.df.to_csv('interview.csv', index = False, header=True, encoding='utf-8-sig')
                 context.bot.send_document(chat_id=update.effective_chat.id, document=open('interview.csv', 'rb'))
+                self.update.message.reply_text("Также ты можешь пройти тесты /quiz или сыграть в игру /game")
             
             else:
             
@@ -209,6 +280,15 @@ class ConversationBot:
             context.bot.send_message(chat_id=update.effective_chat.id, text=self.facts_to_str())
             self.update.message.reply_text('Пожалуйста ответьте на каждый из пунктов:', reply_markup=self.reply_markup)     
 
+       
+  
+def game(update, context):
+    print("GAME", update, context, context.bot.send_game)
+    context.bot.send_game(update.effective_chat.id, "super_game")
+
+def hand_game_answer(update, context, qwe, asd, zxc):
+    print("hand_game_answer")
+
 def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
@@ -223,8 +303,13 @@ def main():
     dp.add_handler(CommandHandler('quiz', BOT.select_quiz))
     dp.add_handler(CommandHandler('interview', BOT2.interview))
     dp.add_handler(PollAnswerHandler(BOT.custom_quiz_handler))
-   
+    updater.dispatcher.add_error_handler(error)
     updater.dispatcher.add_handler(CallbackQueryHandler(BOT.button2))
+    
+
+    # dp.add_handler(CallbackQueryHandler(game_query_hand, "game"))
+    dp.add_handler(CommandHandler('game', game))
+    # dp.add_handler(InlineQuery(hand_game_answer))
 
     updater.dispatcher.add_handler(CallbackQueryHandler(BOT2.button))
     echo_handler = MessageHandler(Filters.text, BOT2.echo)
