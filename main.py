@@ -96,6 +96,9 @@ class MessageCounter:
     def select_quiz(self, update, context):
 
         update.message.reply_text('Выберете тест, который хотите пройти:', reply_markup=self.reply_markup)
+        self.update = update
+        self.counter = 0
+        self.score = 0
 
     def custom_quiz_handler(self, update, context):
         print("RECIEVE QUIZ CUR", context.user_data)

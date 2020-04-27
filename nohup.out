@@ -1342,4 +1342,23 @@ The command will automatically proceed in  seconds or on any key.
 2020-04-26 12:38:06,944 - __main__ - WARNING - Update "None" caused error "Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"
 2020-04-26 12:38:11,962 - telegram.ext.updater - ERROR - Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
 2020-04-26 12:38:11,977 - __main__ - WARNING - Update "None" caused error "Conflict: terminated by other getUpdates request; make sure that only one bot instance is running"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              [33m[nodemon] 2.0.3[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: py,json[39m
+[32m[nodemon] starting `python main.py`[39m
+********************************************************************************
+Python 2 is deprecated. Upgrade to Python 3 as soon as possible.
+See https://cloud.google.com/python/docs/python2-sunset
+
+To suppress this warning, create an empty ~/.cloudshell/no-python-warning file.
+The command will automatically proceed in  seconds or on any key.
+********************************************************************************
+events.js:167
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event at:
+    at lazyFs.read (internal/fs/streams.js:165:12)
+    at FSReqWrap.wrapper [as oncomplete] (fs.js:463:17)
