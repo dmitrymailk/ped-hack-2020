@@ -22,8 +22,6 @@ logger = logging.getLogger(__name__)
 
 CURRENT = 0
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 # data = pd.read_csv("./all_tests/tests.csv", encoding="utf8")
 

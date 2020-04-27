@@ -1,0 +1,4 @@
+natsort
+pandas
+python-telegram-bot
+telegram
